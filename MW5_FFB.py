@@ -40,8 +40,8 @@ class JoyStick:
 @dataclass
 class State:
     telm_times: list[int] = dataclasses.field(default_factory=list)
-    long_g: float = 0
-    lat_g: float = 0
+    long_g: float = None
+    late_g: float = None
     joy: JoyStick = field(default_factory=JoyStick)
 
 
@@ -50,7 +50,6 @@ class Settings:
     gain: int
     gain_set: bool
     running: bool
-    exit_sock: socket.socket
 
 
 THROTTLE_DEAD_START = int(0x4000 * 0.95)
@@ -128,6 +127,20 @@ async def joy_poller(settings: Settings, state: State) -> None:
         vjoy.update()
 
 
+class TelemetryProtocol(asyncio.DatagramProtocol):
+    def __init__(self, state: State):
+        self.state = state
+
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def datagram_received(self, data, addr):
+        self.state.telm_times.append(time.time_ns())
+        self.state.telm_times = self.state.telm_times[-ROLLING_AVERAGE_LEN:]
+
+        self.state.late_g, self.state.long_g, _ = struct.unpack("<fff", data[68:80])
+
+
 async def force_feed_back(settings: Settings, state: State) -> None:
     SidewinderFFB2.acquire()
     x_y_force = SidewinderFFB2.ConstantForce()
@@ -136,51 +149,18 @@ async def force_feed_back(settings: Settings, state: State) -> None:
     loop = asyncio.get_running_loop()
     await loop.run_in_executor(None, x_y_force.set_direction, 0, 0)
 
-    svr = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-    svr.bind(("127.0.0.1", 10001))
-    svr.setblocking(False)  # noqa: FBT003
-
-    min_val = 100
-    max_val = 0
-
     while settings.running:
-        await asyncio.sleep(0)
         if not settings.gain_set:
             await loop.run_in_executor(None, x_y_force.set_gain, settings.gain)
             settings.gain_set = True
 
-        # We want the latest update, so get everything until we run out..
-        buff = None
+        if state.long_g:
+            lat_dir = max(-10000, min(10000, int(math.tanh(state.late_g) * 10000)))
+            long_dir = max(-10000, min(10000, -int(math.tanh(state.long_g) * 10000)))
 
-        read, _, _ = await loop.run_in_executor(
-            None, select.select, [svr, settings.exit_sock], [], []
-        )
-        if settings.exit_sock in read:
-            return
-
-        while True:
-            buff, _ = svr.recvfrom(1024)
-            read, _, _ = await loop.run_in_executor(
-                None, select.select, [svr, settings.exit_sock], [], [], 0
-            )
-            if settings.exit_sock in read:
-                return
-            if not read:
-                break
-
-        state.telm_times.append(time.time_ns())
-        state.telm_times = state.telm_times[-ROLLING_AVERAGE_LEN:]
-
-        late_g, long_g, vert_g = struct.unpack("<fff", buff[68:80])
-
-        max_val = max(vert_g, max_val)
-
-        min_val = min(vert_g, min_val)
-
-        lat_dir = max(-10000, min(10000, int(math.tanh(late_g) * 10000)))
-        long_dir = max(-10000, min(10000, -int(math.tanh(long_g) * 10000)))
-
-        await loop.run_in_executor(None, x_y_force.set_direction, lat_dir, long_dir)
+            await loop.run_in_executor(None, x_y_force.set_direction, lat_dir, long_dir)
+        else:
+            await asyncio.sleep(0)
 
 
 async def display(settings: Settings, state: State) -> None:
@@ -197,8 +177,11 @@ async def display(settings: Settings, state: State) -> None:
                 max(time.time_ns() - lowest, avg) / 1000000000
             )  # ns to seconds
 
+            color = "green"
+            if time_since_telm > 1:
+                color = "orange1"
             if time_since_telm < 2:
-                telemetry_lat = Text(f"{time_since_telm:2.4f}", "green")
+                telemetry_lat = Text(f"{time_since_telm:2.4f}", color)
 
         text = Text.assemble(
             "telm lat : ",
@@ -213,16 +196,16 @@ async def display(settings: Settings, state: State) -> None:
 
 
 async def main():
-    in_sock, out_sock = socket.socketpair()
-    in_sock.setblocking(False)  # noqa: FBT003
-    out_sock.setblocking(False)  # noqa: FBT003
-
-    settings = Settings(gain=7000, gain_set=False, running=True, exit_sock=out_sock)
+    settings = Settings(gain=7000, gain_set=False, running=True)
     state = State()
+
+    loop = asyncio.get_running_loop()
+    transport, protocol = await loop.create_datagram_endpoint(
+        lambda: TelemetryProtocol(state), local_addr=("127.0.0.1", 10001)
+    )
 
     def signal_handler(sig, frame):
         settings.running = False
-        in_sock.send(b"X")
 
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -230,6 +213,8 @@ async def main():
         _ = tg.create_task(joy_poller(settings, state))
         _ = tg.create_task(force_feed_back(settings, state))
         _ = tg.create_task(display(settings, state))
+
+    transport.close()
 
 
 if __name__ == "__main__":
