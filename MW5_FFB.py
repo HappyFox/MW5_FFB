@@ -88,7 +88,7 @@ async def joy_poller(settings: Settings, state: State) -> None:
             elif buttons[-2]:
                 if not gain_down:
                     settings.gain -= 500
-                    settings.gain = max(settings.gain, SidewinderFFB2.DI_FFNOMINALMAX)
+                    settings.gain = max(settings.gain, 0)
                     settings.gain_set = False
                     gain_down = True
             else:
@@ -193,7 +193,9 @@ async def display(settings: Settings, state: State) -> None:
             lowest = state.telm_times[0]
             avg = sum([x - lowest for x in state.telm_times]) / len(state.telm_times)
 
-            time_since_telm = max(time.time_ns() - lowest, avg) / 1000000000
+            time_since_telm = (
+                max(time.time_ns() - lowest, avg) / 1000000000
+            )  # ns to seconds
 
             if time_since_telm < 2:
                 telemetry_lat = Text(f"{time_since_telm:2.4f}", "green")
@@ -201,7 +203,7 @@ async def display(settings: Settings, state: State) -> None:
         text = Text.assemble(
             "telm lat : ",
             telemetry_lat,
-            f", X: {state.joy.x}. Y: {state.joy.y}, Rudder: {state.joy.rudder}, Throttle: {state.joy.throttle}             ",
+            f", X: {state.joy.x}. Y: {state.joy.y}, Rudder: {state.joy.rudder}, Throttle: {state.joy.throttle}, FF Gain: {settings.gain}             ",
         )
 
         spin.update(text=text)
