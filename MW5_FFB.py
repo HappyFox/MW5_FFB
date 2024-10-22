@@ -1,23 +1,41 @@
+"""A script to take telemetry from Mechwarrior 5: mercs and inject it as force feedback effect into a Joystick.
+
+Current only supports the Microsoft Sidewinder Force Feedback 2, as that is
+the stick I have :-D. To read it and send force feedback effects, I wrote my
+own python bindings in c/pybind11. https://github.com/HappyFox/SidewinderFFB2
+
+To get the telemetry, it uses the SpaceMonkey program by PHARTGAMES. See
+https://github.com/PHARTGAMES/SpaceMonkey
+
+MW5 has issues reading the Sidewinder Force Feedback 2, so the script uses a
+virtual joystick, vjoy : https://github.com/njz3/vJoy/ . To write to the
+virtual joystick, I use the pyvjoy library. https://github.com/tidzo/pyvjoy
+
+This also allowed me to change the pov hat into discreet buttons, as MW5 seems
+to like that better.
+
+Also the "6" button is now a "layer" button, giving access to another set when
+held. Except "7" and "8", when "6" is held those increase and decrease the force
+feedback gain.
+"""
+
 from __future__ import annotations
 
 import asyncio
 import dataclasses
 import math
-import select
 import signal
-import socket
 import struct
+import sys
 import time
 from dataclasses import dataclass, field
 
 import pyvjoy
-
-from rich import print
-from rich.text import Text
-from rich.spinner import Spinner, SPINNERS
-
-
 import SidewinderFFB2
+from rich import print
+from rich.spinner import Spinner
+from rich.text import Text
+from SidewinderFFB2 import DI_FFNOMINALMAX as FF_MAX
 
 ROLLING_AVERAGE_LEN = 5
 
@@ -131,9 +149,6 @@ class TelemetryProtocol(asyncio.DatagramProtocol):
     def __init__(self, state: State):
         self.state = state
 
-    def connection_made(self, transport):
-        self.transport = transport
-
     def datagram_received(self, data, addr):
         self.state.telm_times.append(time.time_ns())
         self.state.telm_times = self.state.telm_times[-ROLLING_AVERAGE_LEN:]
@@ -155,8 +170,8 @@ async def force_feed_back(settings: Settings, state: State) -> None:
             settings.gain_set = True
 
         if state.long_g:
-            lat_dir = max(-10000, min(10000, int(math.tanh(state.late_g) * 10000)))
-            long_dir = max(-10000, min(10000, -int(math.tanh(state.long_g) * 10000)))
+            lat_dir = max(-FF_MAX, min(FF_MAX, int(math.tanh(state.late_g) * FF_MAX)))
+            long_dir = max(-FF_MAX, min(FF_MAX, -int(math.tanh(state.long_g) * FF_MAX)))
 
             await loop.run_in_executor(None, x_y_force.set_direction, lat_dir, long_dir)
         else:
@@ -186,7 +201,7 @@ async def display(settings: Settings, state: State) -> None:
         text = Text.assemble(
             "telm lat : ",
             telemetry_lat,
-            f", X: {state.joy.x}. Y: {state.joy.y}, Rudder: {state.joy.rudder}, Throttle: {state.joy.throttle}, FF Gain: {settings.gain}             ",
+            f", X: {state.joy.x}. Y: {state.joy.y}, Rudder: {state.joy.rudder}, Throttle: {state.joy.throttle}, FF Gain: {settings.gain//100}%",
         )
 
         spin.update(text=text)
@@ -196,7 +211,8 @@ async def display(settings: Settings, state: State) -> None:
 
 
 async def main():
-    settings = Settings(gain=7000, gain_set=False, running=True)
+    # Set gain to 70%
+    settings = Settings(gain=FF_MAX // 100 * 70, gain_set=False, running=True)
     state = State()
 
     loop = asyncio.get_running_loop()
@@ -219,9 +235,17 @@ async def main():
 
 if __name__ == "__main__":
     try:
-        SidewinderFFB2.init()
-        SidewinderFFB2.acquire()
+        try:
+            SidewinderFFB2.init()
+            SidewinderFFB2.acquire()
+        except RuntimeError:
+            print(
+                "Unable to acquire the joystick, is it plugged in and the default joystick?",
+            )
+            sys.exit(1)
+        print("All Systems Nominal.", end="\r")
+        time.sleep(0.5)
         asyncio.run(main())
-        print("Shutdown")
+        print("\nShutdown")
     finally:
         SidewinderFFB2.release()
