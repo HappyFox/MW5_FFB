@@ -1,0 +1,38 @@
+START_BIND
+NAME: vJoy Stick
+VID: 0x1234
+PID: 0xBEAD
+BUTTON: InButton=GenericUSBController_Button1, OutButtons=Joystick_Button1
+BUTTON: InButton=GenericUSBController_Button2, OutButtons=Joystick_Button2
+BUTTON: InButton=GenericUSBController_Button3, OutButtons=Joystick_Button3
+BUTTON: InButton=GenericUSBController_Button4, OutButtons=Joystick_Button4
+BUTTON: InButton=GenericUSBController_Button5, OutButtons=Joystick_Button5
+BUTTON: InButton=GenericUSBController_Button6, OutButtons=Joystick_Button6
+BUTTON: InButton=GenericUSBController_Button7, OutButtons=Joystick_Button7
+BUTTON: InButton=GenericUSBController_Button8, OutButtons=Joystick_Button8
+BUTTON: InButton=GenericUSBController_Button9, OutButtons=Joystick_Button9
+BUTTON: InButton=GenericUSBController_Button10, OutButtons=Joystick_Button10
+BUTTON: InButton=GenericUSBController_Button11, OutButtons=Joystick_Button11
+BUTTON: InButton=GenericUSBController_Button12, OutButtons=Joystick_Button12
+BUTTON: InButton=GenericUSBController_Button13, OutButtons=Joystick_Button13
+BUTTON: InButton=GenericUSBController_Button14, OutButtons=Joystick_Button14
+BUTTON: InButton=GenericUSBController_Button15, OutButtons=Joystick_Button15
+BUTTON: InButton=GenericUSBController_Button16, OutButtons=Joystick_Button16
+BUTTON: InButton=GenericUSBController_Button17, OutButtons=Joystick_Button17
+BUTTON: InButton=GenericUSBController_Button18, OutButtons=Joystick_Button18
+BUTTON: InButton=GenericUSBController_Button19, OutButtons=Joystick_Button19
+BUTTON: InButton=GenericUSBController_Button20, OutButtons=Joystick_Button20
+BUTTON: InButton=GenericUSBController_Button21, OutButtons=Throttle_Button1
+BUTTON: InButton=GenericUSBController_Button22, OutButtons=Throttle_Button2
+BUTTON: InButton=GenericUSBController_Button23, OutButtons=Throttle_Button3
+BUTTON: InButton=GenericUSBController_Button24, OutButtons=Throttle_Button4
+BUTTON: InButton=GenericUSBController_Button25, OutButtons=Throttle_Button5
+BUTTON: InButton=GenericUSBController_Button26, OutButtons=Throttle_Button6
+BUTTON: InButton=GenericUSBController_Button27, OutButtons=Throttle_Button7
+BUTTON: InButton=GenericUSBController_Button28, OutButtons=Throttle_Button8
+BUTTON: InButton=GenericUSBController_Button29, OutButtons=Throttle_Button9
+BUTTON: InButton=GenericUSBController_Button30, OutButtons=Throttle_Button10
+AXIS: InAxis=GenericUSBController_Axis1, OutAxis=Joystick_Axis1, Invert=FALSE, Offset=-0.5, DeadZoneMin=-0.1, DeadZoneMax=0.1, MapToDeadZone=FALSE
+AXIS: InAxis=GenericUSBController_Axis2, OutAxis=Joystick_Axis2, Invert=FALSE, Offset=-0.5, DeadZoneMin=-0.1, DeadZoneMax=0.1 MapToDeadZone=FALSE
+AXIS: InAxis=GenericUSBController_Axis3, OutAxis=Joystick_Axis3, Invert=TRUE, Offset=0.5, DeadZoneMin=-0.0, DeadZoneMax=0.0, MapToDeadZone=FALSE
+AXIS: InAxis=GenericUSBController_Axis4, OutAxis=Joystick_Axis4, Invert=FALSE, Offset=-0.5, DeadZoneMin=-0.05, DeadZoneMax=0.05, MapToDeadZone=FALSE
