@@ -1,0 +1,3 @@
+pyvjoy==1.0.1
+rich==13.9.2
+SidewinderFFB2==0.0.1

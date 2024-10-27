@@ -27,6 +27,10 @@ The script uses [vjoy](https://github.com/njz3/vJoy/) with [pyvjoy](https://gith
 3. Setup SpaceMonky, make sure it works with MW5. Have it configured like this:
 ![SpaceMonky](images/SpaceMonkey-main.png)
 ![SpaceMonkey_config](images/SpaceMonkey_config.png)
+4. Copy the [HOTASMappings.Remap](HOTASMappings.Remap) to your_user\AppData\Local\MW5Mercs\Saved\SavedHOTAS
+5. From the command line, cd into where you have cloned this repro and run: `pip install -r .\requirements.txt` 
+
+## Startup sequence
 
 
 

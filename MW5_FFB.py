@@ -17,6 +17,9 @@ to like that better.
 Also the "6" button is now a "layer" button, giving access to another set when
 held. Except "7" and "8", when "6" is held those increase and decrease the force
 feedback gain.
+
+This is verging on needing to be split up into seperate files/modules. But it's
+basically complete.
 """
 
 from __future__ import annotations
@@ -86,7 +89,9 @@ async def joy_poller(settings: Settings, state: State) -> None:
     gain_down = False
 
     while settings.running:
-        await asyncio.sleep(0.01)  # Yeild
+        await asyncio.sleep(
+            0.01
+        )  # Yeild to let other tasks, but also to let the UI thread run on the game.
         joy_state = SidewinderFFB2.poll()
 
         layer = joy_state.buttons[5]
