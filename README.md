@@ -23,11 +23,9 @@ The script uses [vjoy](https://github.com/njz3/vJoy/) with [pyvjoy](https://gith
 
 1. Get a Microsoft Sidewinder Force Feedback 2 joystick, set as the preferred joystick. No drivers are needed on Windows 11.
 2. You will then need to setup vjoy and configure it like this:
-![vjoy setup](images/vjoy-config.png)
-3. Setup SpaceMonky, make sure it works with MW5. Have it configured like this:
-![SpaceMonky](images/SpaceMonkey-main.png)
-![SpaceMonkey_config](images/SpaceMonkey_config.png)
-4. Copy the [HOTASMappings.Remap](HOTASMappings.Remap) to your_user\AppData\Local\MW5Mercs\Saved\SavedHOTAS
+[vjoy setup](images/vjoy-config.png)
+3. Setup SpaceMonky, make sure it works with MW5. Have it configured like [this](images/SpaceMonkey-main.png) and [this](images/SpaceMonkey_config.png)
+4. Copy the [HOTASMappings.Remap](HOTASMappings.Remap) to `your_user\AppData\Local\MW5Mercs\Saved\SavedHOTAS`
 5. From the command line, cd into where you have cloned this repro and run: `pip install -r .\requirements.txt` 
 
 ## Startup sequence
