@@ -26,7 +26,7 @@ The script uses [vjoy](https://github.com/njz3/vJoy/) with [pyvjoy](https://gith
 ![vjoy setup](images/vjoy-config.png)
 3. Setup SpaceMonky, make sure it works with MW5. Have it configured like this:
 ![SpaceMonky](images/SpaceMonkey-main.png)
-![SpaceMonky_config](images/SpaceMonkey config.png)
+![SpaceMonkey_config]("images/SpaceMonkey config.png")
 
 
 
