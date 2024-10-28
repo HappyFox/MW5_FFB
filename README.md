@@ -26,9 +26,19 @@ The script uses [vjoy](https://github.com/njz3/vJoy/) with [pyvjoy](https://gith
 [vjoy setup](images/vjoy-config.png)
 3. Setup SpaceMonky, make sure it works with MW5. Have it configured like [this](images/SpaceMonkey-main.png) and [this](images/SpaceMonkey_config.png)
 4. Copy the [HOTASMappings.Remap](HOTASMappings.Remap) to `your_user\AppData\Local\MW5Mercs\Saved\SavedHOTAS`
-5. From the command line, cd into where you have cloned this repro and run: `pip install -r .\requirements.txt` 
+5. Config the joystick as you like. Remember hat is treated as more buttons and the `5` button acts as a layer for another set. `5` plus `7` and `8` adjust the strength of the feedback.
+6. From the command line, cd into where you have cloned this repro and run: `pip install -r .\requirements.txt` 
 
 ## Startup sequence
+Once you have everything setup, the startup sequence is
+1. Start SpaceMonkey
+2. Click the `Open Motion` button.
+3. Click `Initialize!`
+4. Start the `UnrealEngineModLauncher.exe`
+5. In windows terminal, cd to the directory you cloned the script in. then run `python .\MW5_FFB.py`
+6. Start MW5.
+
+Launch your mission as normal. Sometimes the telemetry doesn't flow, I found if you restart the mission it tends to fix the issue.
 
 
 
