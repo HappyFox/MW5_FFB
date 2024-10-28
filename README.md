@@ -21,6 +21,8 @@ The script uses [vjoy](https://github.com/njz3/vJoy/) with [pyvjoy](https://gith
 
 ## Setup
 
+
+
 1. Get a Microsoft Sidewinder Force Feedback 2 joystick, set as the preferred joystick. No drivers are needed on Windows 11.
 2. You will then need to setup vjoy and configure it like this:
 [vjoy setup](images/vjoy-config.png)
@@ -30,6 +32,9 @@ The script uses [vjoy](https://github.com/njz3/vJoy/) with [pyvjoy](https://gith
 6. From the command line, cd into where you have cloned this repro and run: `pip install -r .\requirements.txt` 
 
 ## Startup sequence
+
+I made a video of this [here](https://youtu.be/Uh_Zm3an7PE) as it's a little involved.
+
 Once you have everything setup, the startup sequence is
 1. Start SpaceMonkey
 2. Click the `Open Motion` button.
