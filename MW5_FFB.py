@@ -90,7 +90,7 @@ async def joy_poller(settings: Settings, state: State) -> None:
 
     while settings.running:
         await asyncio.sleep(
-            0.01
+            0.03
         )  # Yeild to let other tasks, but also to let the UI thread run on the game.
         joy_state = SidewinderFFB2.poll()
 

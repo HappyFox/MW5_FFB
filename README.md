@@ -46,5 +46,8 @@ Once you have everything setup, the startup sequence is
 Launch your mission as normal. Sometimes the telemetry doesn't flow, I found if you restart the mission it tends to fix the issue.
 
 
+## Game window won't update unless I alt-tab in then out!
 
+This seems to be caused by updating the virtual joystick too fast. If you run into this, increase this number : https://github.com/HappyFox/MW5_FFB/blob/main/MW5_FFB.py#L93
+I have set it to 30 fps, which should be good for most systems.
 
